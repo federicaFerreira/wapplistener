@@ -36,22 +36,24 @@ def create_assistant(file):
 
 # Use context manager to ensure the shelf file is closed properly
 def check_if_thread_exists(wa_id):
-    with shelve.open("threads_db") as threads_shelf:
+    with shelve.open("/tmp/threads_db") as threads_shelf:
         return threads_shelf.get(wa_id, None)
 
 
 def store_thread(wa_id, thread_id):
-    with shelve.open("threads_db", writeback=True) as threads_shelf:
+    with shelve.open("/tmp/threads_db", writeback=True) as threads_shelf:
         threads_shelf[wa_id] = thread_id
 
-def update_openai_file(file_name="data.txt"):
-    
+def update_openai_file(file_name="/tmp/data.txt"):
+
+    id = ''
     files = client.files.list()
-    for file in files:
-        if(file.filename == file_name):
-            id = file.id
-    
-    client.files.delete(id)
+    for file_old in files:
+        if(file_old.filename == "data.txt"):
+            id = file_old.id
+
+    if id != '':
+        client.files.delete(id)
 
     file = client.files.create(
         file=open(file_name, "rb"), purpose="assistants"

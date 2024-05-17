@@ -182,7 +182,7 @@ class GoogleSheet:
         payments_df = pd.DataFrame(payments_values[1:], columns=payments_values[0])
         data['Pagos'] = payments_df
         
-        with open("data.txt", 'w') as txt_file:
+        with open("/tmp/data.txt", 'w') as txt_file:
         # Agregar los datos de la hoja de cálculo al archivo de texto
             for sheet_name, df in data.items():
                 txt_file.write(f"Datos de la hoja: {sheet_name}\n")

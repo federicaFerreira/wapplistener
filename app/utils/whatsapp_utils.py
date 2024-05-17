@@ -86,41 +86,42 @@ def process_whatsapp_message(body):
     
     wa = Whatsapp()
     # wa.add_contact(contact_wa_id, contact_name)
-    process = wa.process_message(message_body)
+    message_type = wa.process_message(message_body)
 
-    if not process:
+    if message_type == 'ERROR':
+        response = 'Error al parsear el mensaje'
+    elif message_type == 'NO_TYPE':
         # OpenAI Integration
         response = generate_response(message_body, contact_wa_id, contact_name)
         response = process_text_for_whatsapp(response)
     else:
-
-        if wa.type == 'UPDATE_DATA':
+        if message_type == 'UPDATE_DATA':
             google = GoogleSheet()
             google.create_pdf_from_spreadsheet()
             update_openai_file()
             response = "Listo!"
 
-        if wa.type == 'BUDGET_PAYMENT_LINK':
+        if message_type == 'BUDGET_PAYMENT_LINK':
             google = GoogleSheet()
             response = google.get_budget_payment_link_message(wa.type_params["budget_code"], wa.type_params["amount"], wa.type_params["currency"])
 
-        if wa.type == 'PROVIDER_PAYMENT_LINK':
+        if message_type == 'PROVIDER_PAYMENT_LINK':
             google = GoogleSheet()
             response = google.get_provider_payment_link_message(wa.type_params["provider_code"], wa.type_params["amount"], wa.type_params["currency"])
 
-        if wa.type == 'RECONCILE_PAYMENT':
+        if message_type == 'RECONCILE_PAYMENT':
             google = GoogleSheet()
             response = google.reconcile_payment(wa.type_params["budget_code"], wa.type_params["amount"], wa.type_params["currency"])
 
-        if wa.type == 'PAYMENT':
+        if message_type == 'PAYMENT':
             google = GoogleSheet()
             response = google.add_payment(wa.type_params["provider_code"], wa.type_params["amount"], wa.type_params["currency"])
 
-        if wa.type == 'PROVIDERS':
+        if message_type == 'PROVIDERS':
             google = GoogleSheet()
             response = google.get_providers()
 
-        if wa.type == 'BUDGETS':
+        if message_type == 'BUDGETS':
             google = GoogleSheet()
             response = google.get_budgets()
 
